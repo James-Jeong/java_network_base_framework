@@ -1,0 +1,74 @@
+package network.socket;
+
+import instance.BaseEnvironment;
+
+public class NetInterface {
+
+    ////////////////////////////////////////////////////////////
+    // VARIABLES
+    private final BaseEnvironment baseEnvironment;
+    private final boolean isStream; // tcp or udp
+    private final int threadCount;
+    private final int sendBufSize;
+    private final int recvBufSize;
+    private NetInterfaceTrafficStats netInterfaceTrafficStats = null;
+    ////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////
+    // CONSTRUCTOR
+    public NetInterface(BaseEnvironment baseEnvironment, boolean isStream, int threadCount, int sendBufSize, int recvBufSize) {
+        this.baseEnvironment = baseEnvironment;
+        this.isStream = isStream;
+        this.threadCount = threadCount;
+        this.sendBufSize = sendBufSize;
+        this.recvBufSize = recvBufSize;
+    }
+    ////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////
+    // FUNCTIONS
+    public int getThreadCount() {
+        return threadCount;
+    }
+
+    public int getSendBufSize() {
+        return sendBufSize;
+    }
+
+    public int getRecvBufSize() {
+        return recvBufSize;
+    }
+
+    public void createNewTrafficStats() {
+        if (netInterfaceTrafficStats != null) {
+            netInterfaceTrafficStats.clear();
+        } else {
+            netInterfaceTrafficStats = new NetInterfaceTrafficStats();
+        }
+    }
+
+    public float getTotalNumPackets() {
+        if (netInterfaceTrafficStats == null) { return 0; }
+        return netInterfaceTrafficStats.getTotalNumPackets();
+    }
+
+    public float getTotalNumBytes() {
+        if (netInterfaceTrafficStats == null) { return 0; }
+        return netInterfaceTrafficStats.getTotalNumBytes();
+    }
+
+    public void clearTrafficStats() {
+        if (netInterfaceTrafficStats == null) { return; }
+        netInterfaceTrafficStats.clear();
+    }
+
+    public BaseEnvironment getBaseEnvironment() {
+        return baseEnvironment;
+    }
+
+    public boolean isStream() {
+        return isStream;
+    }
+    ////////////////////////////////////////////////////////////
+
+}
