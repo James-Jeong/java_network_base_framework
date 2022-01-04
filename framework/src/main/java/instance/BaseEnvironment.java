@@ -2,26 +2,25 @@ package instance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import service.scheduler.schedule.ScheduleManager;
 import service.ResourceManager;
+import service.scheduler.schedule.ScheduleManager;
 
 public class BaseEnvironment {
 
     ////////////////////////////////////////////////////////////
     // VARIABLES
     private static final Logger logger = LoggerFactory.getLogger(BaseEnvironment.class);
-    private ScheduleManager scheduleManager = null;
-    private ResourceManager portResourceManager = null;
-    private DebugLevel debugLevel = null;
+    private final ScheduleManager scheduleManager;
+    private final ResourceManager portResourceManager;
+    private DebugLevel debugLevel;
     ////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////
     // CONSTRUCTOR
-    public BaseEnvironment() {}
-
     public BaseEnvironment(ScheduleManager scheduleManager, ResourceManager portResourceManager, DebugLevel debugLevel) {
         this.scheduleManager = scheduleManager;
         this.portResourceManager = portResourceManager;
+        this.portResourceManager.initResource();
         this.debugLevel = debugLevel;
     }
     ////////////////////////////////////////////////////////////
@@ -61,27 +60,22 @@ public class BaseEnvironment {
     public void setDebugLevel(DebugLevel debugLevel) {
         this.debugLevel = debugLevel;
     }
-    ////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////
-    // FUNCTIONS : ScheduleManager
     public ScheduleManager getScheduleManager() {
         return scheduleManager;
     }
 
-    public void setScheduleManager(ScheduleManager scheduleManager) {
-        this.scheduleManager = scheduleManager;
-    }
-    ////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////
-    // FUNCTIONS : ResourceManager
     public ResourceManager getPortResourceManager() {
         return portResourceManager;
     }
 
-    public void setPortResourceManager(ResourceManager portResourceManager) {
-        this.portResourceManager = portResourceManager;
+    @Override
+    public String toString() {
+        return "BaseEnvironment{" +
+                "scheduleManager=" + scheduleManager +
+                ", portResourceManager=" + portResourceManager +
+                ", debugLevel=" + debugLevel +
+                '}';
     }
     ////////////////////////////////////////////////////////////
 

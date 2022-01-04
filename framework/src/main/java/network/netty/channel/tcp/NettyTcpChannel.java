@@ -2,6 +2,7 @@ package network.netty.channel.tcp;
 
 import instance.BaseEnvironment;
 import instance.DebugLevel;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -16,23 +17,38 @@ import java.net.UnknownHostException;
 public class NettyTcpChannel extends NettyChannel {
 
     private final EventLoopGroup bossGroup;
-    private final EventLoopGroup workerGroup;
-    private final ServerBootstrap serverBootstrap;
+    private EventLoopGroup workerGroup;
+    private ServerBootstrap serverBootstrap;
+    private Bootstrap bootstrap = null;
     private Channel listenChannel = null;
+    private Channel connectChannel = null;
 
-    public NettyTcpChannel(BaseEnvironment baseEnvironment, long sessionId, int threadCount, int sendBufSize, int recvBufSize) {
+    public NettyTcpChannel(BaseEnvironment baseEnvironment, long sessionId, int threadCount, int sendBufSize, int recvBufSize, ChannelInitializer<SocketChannel> childHandler) {
         super(baseEnvironment, sessionId, threadCount, sendBufSize, recvBufSize);
 
         bossGroup = new NioEventLoopGroup();
-        workerGroup = new NioEventLoopGroup();
-        serverBootstrap = new ServerBootstrap();
+        if (sendBufSize == 0) {
+            workerGroup = new NioEventLoopGroup();
+            serverBootstrap = new ServerBootstrap();
 
-        serverBootstrap.group(bossGroup, workerGroup);
-        serverBootstrap.channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_RCVBUF, recvBufSize)
-                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .option(ChannelOption.SO_REUSEADDR, true)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000);
+            serverBootstrap.group(bossGroup, workerGroup);
+            serverBootstrap.channel(NioServerSocketChannel.class)
+                    .option(ChannelOption.SO_RCVBUF, recvBufSize)
+                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .option(ChannelOption.SO_REUSEADDR, true)
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
+                    .childHandler(childHandler);
+            bootstrap = null;
+        } else {
+            bootstrap.group(bossGroup).channel(SocketChannel.class)
+                    .option(ChannelOption.SO_BROADCAST, false)
+                    .option(ChannelOption.SO_SNDBUF, sendBufSize)
+                    .option(ChannelOption.SO_RCVBUF, recvBufSize)
+                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .option(ChannelOption.SO_REUSEADDR, true)
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
+                    .handler(childHandler);
+        }
     }
 
     @Override
@@ -78,7 +94,27 @@ public class NettyTcpChannel extends NettyChannel {
         listenChannel = null;
     }
 
-    public void setChildHandler(ChannelInitializer<SocketChannel> childHandler) {
-        serverBootstrap.channel(NioServerSocketChannel.class).childHandler(childHandler);
+    @Override
+    public Channel openConnectChannel(String ip, int port) {
+        if (bootstrap == null) { return null; }
+
+        try {
+            InetAddress address = InetAddress.getByName(ip);
+            ChannelFuture channelFuture = bootstrap.connect(address, port).sync();
+            Channel channel =  channelFuture.channel();
+            connectChannel = channel;
+            return channel;
+        } catch (Exception e) {
+            return null;
+        }
     }
+
+    @Override
+    public void closeConnectChannel() {
+        if (connectChannel == null) { return; }
+
+        connectChannel.close();
+        connectChannel = null;
+    }
+
 }

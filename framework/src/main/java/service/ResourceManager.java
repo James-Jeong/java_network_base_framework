@@ -12,31 +12,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ResourceManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceManager.class);
-
-    private static ResourceManager resourceManager = null;
-    private final ConcurrentLinkedQueue<Integer> channelQueues;
-
-    private int targetRtpPortMin = 0;
-    private int targetRtpPortMax = 0;
+    private final ConcurrentLinkedQueue<Integer> channelQueues = new ConcurrentLinkedQueue<>();
+    private final int targetRtpPortMin;
+    private final int targetRtpPortMax;
     private final int portGap = 2;
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public ResourceManager( ) {
-        channelQueues = new ConcurrentLinkedQueue<>();
-    }
-
-    public static ResourceManager getInstance ( ) {
-        if (resourceManager == null) {
-            resourceManager = new ResourceManager();
-        }
-
-        return resourceManager;
+    public ResourceManager(int targetRtpPortMin, int targetRtpPortMax) {
+        this.targetRtpPortMin = targetRtpPortMin;
+        this.targetRtpPortMax = targetRtpPortMax;
+        initResource();
     }
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void initResource(int targetRtpPortMin, int targetRtpPortMax) {
+    public void initResource() {
         for (int idx = targetRtpPortMin; idx <= targetRtpPortMax; idx += portGap) {
             try {
                 channelQueues.add(idx);

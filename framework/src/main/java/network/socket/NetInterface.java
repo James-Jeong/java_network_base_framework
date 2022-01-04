@@ -27,6 +27,10 @@ public class NetInterface {
 
     ////////////////////////////////////////////////////////////
     // FUNCTIONS
+    public void addSocket() {
+
+    }
+
     public int getThreadCount() {
         return threadCount;
     }
@@ -68,6 +72,18 @@ public class NetInterface {
 
     public boolean isStream() {
         return isStream;
+    }
+
+    @Override
+    public String toString() {
+        return "NetInterface{" +
+                "baseEnvironment=" + baseEnvironment +
+                ", isStream=" + isStream +
+                ", threadCount=" + threadCount +
+                ", sendBufSize=" + sendBufSize +
+                ", recvBufSize=" + recvBufSize +
+                ", netInterfaceTrafficStats=" + netInterfaceTrafficStats +
+                '}';
     }
     ////////////////////////////////////////////////////////////
 

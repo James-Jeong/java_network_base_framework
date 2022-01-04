@@ -65,6 +65,15 @@ public class GroupEndpointId {
         if (sourceFilterAddress == null) { return false; }
         return sourceFilterAddress.addressIsNull();
     }
+
+    @Override
+    public String toString() {
+        return "GroupEndpointId{" +
+                "groupAddress=" + groupAddress +
+                ", sourceFilterAddress=" + sourceFilterAddress +
+                ", ttl=" + ttl +
+                '}';
+    }
     ////////////////////////////////////////////////////////////
 
 }

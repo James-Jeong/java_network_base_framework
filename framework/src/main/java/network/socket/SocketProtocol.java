@@ -1,7 +1,8 @@
 package network.socket;
 
-public class SocketProtocol {
+public enum SocketProtocol {
 
-
+    TCP,
+    UDP
 
 }

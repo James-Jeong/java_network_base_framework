@@ -4,11 +4,12 @@ import instance.BaseEnvironment;
 import instance.DebugLevel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import network.netty.channel.NettyChannel;
 import network.netty.channel.tcp.NettyTcpChannel;
 import network.netty.channel.udp.NettyUdpChannel;
 import network.socket.NetInterface;
-import service.ResourceManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +30,9 @@ public class NettyManager {
 
     ////////////////////////////////////////////////////////////
     // CONSTRUCTOR
-    public NettyManager(BaseEnvironment baseEnvironment, boolean isStream, int threadCount, int sendBufSize, int recvBufSize) {
+    public NettyManager(BaseEnvironment baseEnvironment, NetInterface netInterface) {
         this.baseEnvironment = baseEnvironment;
-        this.netInterface = new NetInterface(baseEnvironment, isStream, threadCount, sendBufSize, recvBufSize);
+        this.netInterface = netInterface;
     }
     ////////////////////////////////////////////////////////////
 
@@ -45,17 +46,17 @@ public class NettyManager {
         return netInterface;
     }
 
-    public boolean addChannel(long sessionId, String ip) {
-        int port = ResourceManager.getInstance().takePort();
+    public boolean addChannel(long sessionId, String ip, ChannelInitializer<?> channelHandler) {
+        int port = baseEnvironment.getPortResourceManager().takePort();
         if (port == -1) {
             baseEnvironment.printMsg(DebugLevel.WARN, "Fail to add the channel. Port is full. (key=%s)", sessionId);
             return false;
         }
 
-        return addChannel(sessionId, ip, port);
+        return addChannel(sessionId, ip, port, channelHandler);
     }
 
-    public boolean addChannel(long sessionId, String ip, int port) {
+    public boolean addChannel(long sessionId, String ip, int port, ChannelInitializer<?> channelHandler) {
         try {
             channelMapLock.lock();
 
@@ -66,7 +67,14 @@ public class NettyManager {
 
             NettyChannel nettyChannel;
             if (netInterface.isStream()) {
-                nettyChannel = new NettyTcpChannel(baseEnvironment, sessionId, netInterface.getThreadCount(), netInterface.getSendBufSize(), netInterface.getRecvBufSize());
+                nettyChannel = new NettyTcpChannel(
+                        baseEnvironment,
+                        sessionId,
+                        netInterface.getThreadCount(),
+                        netInterface.getSendBufSize(),
+                        netInterface.getRecvBufSize(),
+                        (ChannelInitializer<SocketChannel>) channelHandler
+                );
                 Channel channel = nettyChannel.openListenChannel(ip, port);
                 if (channel == null) {
                     nettyChannel.closeListenChannel();
@@ -74,7 +82,14 @@ public class NettyManager {
                     return false;
                 }
             } else {
-                nettyChannel = new NettyUdpChannel(baseEnvironment, sessionId, netInterface.getThreadCount(), netInterface.getSendBufSize(), netInterface.getRecvBufSize());
+                nettyChannel = new NettyUdpChannel(
+                        baseEnvironment,
+                        sessionId,
+                        netInterface.getThreadCount(),
+                        netInterface.getSendBufSize(),
+                        netInterface.getRecvBufSize(),
+                        (ChannelInitializer<NioDatagramChannel>) channelHandler
+                );
                 Channel channel = nettyChannel.openListenChannel(ip, port);
                 if (channel == null) {
                     nettyChannel.closeListenChannel();
@@ -105,7 +120,7 @@ public class NettyManager {
                 }
 
                 int port = nettyChannel.getListenPort();
-                ResourceManager.getInstance().restorePort(port);
+                baseEnvironment.getPortResourceManager().restorePort(port);
 
                 nettyChannel.closeListenChannel();
                 channelMap.remove(key);
@@ -133,7 +148,7 @@ public class NettyManager {
 
                     int port = nettyChannel.getListenPort();
                     nettyChannel.closeListenChannel();
-                    ResourceManager.getInstance().restorePort(port);
+                    baseEnvironment.getPortResourceManager().restorePort(port);
                     channelMap.remove(entry.getKey());
                     nettyChannel.stop();
                 }

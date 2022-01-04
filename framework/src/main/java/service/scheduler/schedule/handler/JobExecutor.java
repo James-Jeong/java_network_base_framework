@@ -1,7 +1,7 @@
 package service.scheduler.schedule.handler;
 
-import service.scheduler.job.Job;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import service.scheduler.job.Job;
 
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;

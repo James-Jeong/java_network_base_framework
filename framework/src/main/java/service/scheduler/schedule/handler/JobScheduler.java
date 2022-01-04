@@ -1,8 +1,8 @@
 package service.scheduler.schedule.handler;
 
-import service.scheduler.job.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.scheduler.job.Job;
 
 public class JobScheduler {
 

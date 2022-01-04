@@ -1,8 +1,7 @@
 package network.netty.channel;
 
 import instance.BaseEnvironment;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
 
 public class NettyChannel {
 
@@ -75,6 +74,11 @@ public class NettyChannel {
 
     public void closeListenChannel() {}
 
+    public Channel openConnectChannel(String ip, int port) {
+        return null;
+    }
+
+    public void closeConnectChannel() {}
     ////////////////////////////////////////////////////////////
 
 }

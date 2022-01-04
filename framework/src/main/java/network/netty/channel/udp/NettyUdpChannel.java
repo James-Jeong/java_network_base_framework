@@ -20,8 +20,9 @@ public class NettyUdpChannel extends NettyChannel {
     private final NioEventLoopGroup nioEventLoopGroup;
     private final Bootstrap bootstrap;
     private Channel listenChannel = null;
+    private Channel connectChannel = null;
 
-    public NettyUdpChannel(BaseEnvironment baseEnvironment, long sessionId, int threadCount, int sendBufSize, int recvBufSize) {
+    public NettyUdpChannel(BaseEnvironment baseEnvironment, long sessionId, int threadCount, int sendBufSize, int recvBufSize, ChannelInitializer<NioDatagramChannel> channelHandler) {
         super(baseEnvironment, sessionId, threadCount, sendBufSize, recvBufSize);
 
         nioEventLoopGroup = new NioEventLoopGroup(threadCount);
@@ -32,7 +33,8 @@ public class NettyUdpChannel extends NettyChannel {
                 .option(ChannelOption.SO_RCVBUF, recvBufSize)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .option(ChannelOption.SO_REUSEADDR, true)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000);
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
+                .handler(channelHandler);
     }
 
     @Override
@@ -78,8 +80,25 @@ public class NettyUdpChannel extends NettyChannel {
         listenChannel = null;
     }
 
-    public void setChannelHandler(ChannelInitializer<NioDatagramChannel> channelHandler) {
-        bootstrap.group(nioEventLoopGroup).channel(NioDatagramChannel.class).handler(channelHandler);
+    @Override
+    public Channel openConnectChannel(String ip, int port) {
+        try {
+            InetAddress address = InetAddress.getByName(ip);
+            ChannelFuture channelFuture = bootstrap.connect(address, port).sync();
+            Channel channel =  channelFuture.channel();
+            connectChannel = channel;
+            return channel;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void closeConnectChannel() {
+        if (connectChannel == null) { return; }
+
+        connectChannel.close();
+        connectChannel = null;
     }
 
 }
