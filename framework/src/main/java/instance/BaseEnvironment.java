@@ -27,6 +27,11 @@ public class BaseEnvironment {
 
     ////////////////////////////////////////////////////////////
     // FUNCTIONS
+    public void stop() {
+        scheduleManager.finish();
+        portResourceManager.releaseResource();
+    }
+
     public void printMsg(String msg, Object... parameters) {
         String log = String.format(msg, parameters);
         if (this.debugLevel == DebugLevel.INFO) {

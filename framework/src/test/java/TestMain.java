@@ -78,6 +78,8 @@ public class TestMain {
         Assert.assertTrue(socketManager.removeSocket(netAddress1));
         Assert.assertTrue(socketManager.removeSocket(netAddress2));
         //
+
+        baseEnvironment.stop();
     }
 
 }

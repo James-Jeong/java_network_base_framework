@@ -4,6 +4,7 @@ import instance.BaseEnvironment;
 import io.netty.channel.ChannelInitializer;
 
 import java.util.HashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class SocketManager {
 
@@ -11,7 +12,9 @@ public class SocketManager {
     // VARIABLES
     private final BaseEnvironment baseEnvironment;
     private final NetInterface netInterface;
-    private final HashMap<String, GroupSocket> groupSocketList = new HashMap<>();
+
+    private final HashMap<String, GroupSocket> groupSocketMap = new HashMap<>();
+    private final ReentrantLock groupSocketMapLock = new ReentrantLock();
     ////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////
@@ -26,19 +29,35 @@ public class SocketManager {
     // FUNCTIONS
     public boolean addSocket(NetAddress netAddress, ChannelInitializer<?> channelHandler) {
         GroupSocket groupSocket = new GroupSocket(baseEnvironment, netInterface, netAddress, channelHandler);
-        return groupSocketList.putIfAbsent(netAddress.getAddressString(), groupSocket) == null;
+
+        groupSocketMapLock.lock();
+        try {
+            return groupSocketMap.putIfAbsent(netAddress.getAddressString(), groupSocket) == null;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            groupSocketMapLock.unlock();
+        }
     }
 
     public boolean removeSocket(NetAddress netAddress) {
         if (netAddress == null) { return false; }
         GroupSocket groupSocket = getSocket(netAddress);
         groupSocket.getListenSocket().stop();
-        return groupSocketList.remove(netAddress.getAddressString()) != null;
+
+        groupSocketMapLock.lock();
+        try {
+            return groupSocketMap.remove(netAddress.getAddressString()) != null;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            groupSocketMapLock.unlock();
+        }
     }
 
     public GroupSocket getSocket(NetAddress netAddress) {
         if (netAddress == null) { return null; }
-        return groupSocketList.get(netAddress.getAddressString());
+        return groupSocketMap.get(netAddress.getAddressString());
     }
     ////////////////////////////////////////////////////////////
 

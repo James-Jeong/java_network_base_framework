@@ -3,7 +3,9 @@ package network.netty.channel.udp;
 import instance.BaseEnvironment;
 import instance.DebugLevel;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -39,6 +41,9 @@ public class NettyUdpChannel extends NettyChannel {
 
     @Override
     public void stop() {
+        getRecvBuf().clear();
+        getSendBuf().clear();
+        closeConnectChannel();
         closeListenChannel();
         nioEventLoopGroup.shutdownGracefully();
     }
@@ -99,6 +104,14 @@ public class NettyUdpChannel extends NettyChannel {
 
         connectChannel.close();
         connectChannel = null;
+    }
+
+    @Override
+    public void sendData(byte[] data, int dataLength) {
+        if (connectChannel == null) { return; }
+
+        ByteBuf buf = Unpooled.copiedBuffer(data);
+        connectChannel.writeAndFlush(buf);
     }
 
 }

@@ -136,6 +136,23 @@ public class ScheduleManager {
         removeScheduleUnit(scheduleUnitKey);
     }
 
+    public void finish() {
+        for (Map.Entry<String, ScheduleUnit> entry : getCloneCallMap().entrySet()) {
+            if (entry == null) {
+                continue;
+            }
+
+            ScheduleUnit scheduleUnit = entry.getValue();
+            if (scheduleUnit == null) {
+                continue;
+            }
+
+            scheduleUnit.stopAll();
+        }
+
+        clearScheduleUnitMap();
+    }
+
     public int getActiveJobNumber(String scheduleUnitKey) {
         if (scheduleUnitKey == null) { return 0; }
 

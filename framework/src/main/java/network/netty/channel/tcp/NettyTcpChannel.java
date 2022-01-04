@@ -4,7 +4,9 @@ import instance.BaseEnvironment;
 import instance.DebugLevel;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -53,6 +55,10 @@ public class NettyTcpChannel extends NettyChannel {
 
     @Override
     public void stop () {
+        getRecvBuf().clear();
+        getSendBuf().clear();
+        closeConnectChannel();
+        closeListenChannel();
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
     }
@@ -115,6 +121,14 @@ public class NettyTcpChannel extends NettyChannel {
 
         connectChannel.close();
         connectChannel = null;
+    }
+
+    @Override
+    public void sendData(byte[] data, int dataLength) {
+        if (connectChannel == null) { return; }
+
+        ByteBuf buf = Unpooled.copiedBuffer(data);
+        connectChannel.writeAndFlush(buf);
     }
 
 }

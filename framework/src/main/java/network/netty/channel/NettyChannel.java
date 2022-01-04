@@ -2,6 +2,7 @@ package network.netty.channel;
 
 import instance.BaseEnvironment;
 import io.netty.channel.Channel;
+import util.module.ConcurrentCyclicFIFO;
 
 public class NettyChannel {
 
@@ -10,8 +11,11 @@ public class NettyChannel {
     private final BaseEnvironment baseEnvironment;
     private final long sessionId;
     private final int threadCount;
+
     private final int sendBufSize;
     private final int recvBufSize;
+    private final ConcurrentCyclicFIFO<byte[]> sendBuf;
+    private final ConcurrentCyclicFIFO<byte[]> recvBuf;
 
     private String listenIp = null;
     private int listenPort = 0;
@@ -23,8 +27,11 @@ public class NettyChannel {
         this.baseEnvironment = baseEnvironment;
         this.sessionId = sessionId;
         this.threadCount = threadCount;
+
         this.sendBufSize = sendBufSize;
         this.recvBufSize = recvBufSize;
+        this.sendBuf = new ConcurrentCyclicFIFO<>();
+        this.recvBuf = new ConcurrentCyclicFIFO<>();
     }
     ////////////////////////////////////////////////////////////
 
@@ -68,6 +75,14 @@ public class NettyChannel {
         this.listenPort = listenPort;
     }
 
+    public ConcurrentCyclicFIFO<byte[]> getSendBuf() {
+        return sendBuf;
+    }
+
+    public ConcurrentCyclicFIFO<byte[]> getRecvBuf() {
+        return recvBuf;
+    }
+
     public Channel openListenChannel(String ip, int port) {
         return null;
     }
@@ -79,6 +94,8 @@ public class NettyChannel {
     }
 
     public void closeConnectChannel() {}
+
+    public void sendData(byte[] data, int dataLength) {}
     ////////////////////////////////////////////////////////////
 
 }
