@@ -1,4 +1,4 @@
-package network.socket;
+package network.definition;
 
 import util.type.UINT8_T;
 

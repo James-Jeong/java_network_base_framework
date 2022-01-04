@@ -17,6 +17,9 @@ public class BaseEnvironment {
 
     ////////////////////////////////////////////////////////////
     // CONSTRUCTOR
+    // 프레임워크 전역 인스턴스
+    // 1. JOB 스케줄링
+    // 2. 포트 자원 관리 ()
     public BaseEnvironment(ScheduleManager scheduleManager, ResourceManager portResourceManager, DebugLevel debugLevel) {
         this.scheduleManager = scheduleManager;
         this.portResourceManager = portResourceManager;

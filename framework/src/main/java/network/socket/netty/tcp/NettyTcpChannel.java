@@ -1,4 +1,4 @@
-package network.netty.channel.tcp;
+package network.socket.netty.tcp;
 
 import instance.BaseEnvironment;
 import instance.DebugLevel;
@@ -11,20 +11,25 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import network.netty.channel.NettyChannel;
+import network.socket.netty.NettyChannel;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class NettyTcpChannel extends NettyChannel {
 
+    ////////////////////////////////////////////////////////////
+    // VARIABLES
     private final EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private ServerBootstrap serverBootstrap;
     private Bootstrap bootstrap = null;
     private Channel listenChannel = null;
     private Channel connectChannel = null;
+    ////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////
+    // CONSTRUCTOR
     public NettyTcpChannel(BaseEnvironment baseEnvironment, long sessionId, int threadCount, int sendBufSize, int recvBufSize, ChannelInitializer<SocketChannel> childHandler) {
         super(baseEnvironment, sessionId, threadCount, sendBufSize, recvBufSize);
 
@@ -41,6 +46,7 @@ public class NettyTcpChannel extends NettyChannel {
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
                     .childHandler(childHandler);
             bootstrap = null;
+            baseEnvironment.printMsg("[%s] NettyTcpChannel is recv-only type.", sessionId);
         } else {
             bootstrap.group(bossGroup).channel(SocketChannel.class)
                     .option(ChannelOption.SO_BROADCAST, false)
@@ -50,9 +56,13 @@ public class NettyTcpChannel extends NettyChannel {
                     .option(ChannelOption.SO_REUSEADDR, true)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
                     .handler(childHandler);
+            baseEnvironment.printMsg("[%s] NettyTcpChannel is send & recv type.", sessionId);
         }
     }
+    ////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////
+    // FUNCTIONS
     @Override
     public void stop () {
         getRecvBuf().clear();
@@ -125,10 +135,16 @@ public class NettyTcpChannel extends NettyChannel {
 
     @Override
     public void sendData(byte[] data, int dataLength) {
-        if (connectChannel == null) { return; }
+        if (connectChannel == null || connectChannel.isActive()) { return; }
 
         ByteBuf buf = Unpooled.copiedBuffer(data);
         connectChannel.writeAndFlush(buf);
     }
+
+    @Override
+    public boolean isRecvOnly() {
+        return bootstrap == null;
+    }
+    ////////////////////////////////////////////////////////////
 
 }

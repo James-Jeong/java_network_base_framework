@@ -2,6 +2,8 @@ package network.socket;
 
 import instance.BaseEnvironment;
 import io.netty.channel.ChannelInitializer;
+import network.definition.NetAddress;
+import network.definition.NetInterface;
 
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;

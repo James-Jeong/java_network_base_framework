@@ -1,4 +1,4 @@
-package network.netty.channel.udp;
+package network.socket.netty.udp;
 
 import instance.BaseEnvironment;
 import instance.DebugLevel;
@@ -12,18 +12,23 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import network.netty.channel.NettyChannel;
+import network.socket.netty.NettyChannel;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class NettyUdpChannel extends NettyChannel {
 
+    ////////////////////////////////////////////////////////////
+    // VARIABLES
     private final NioEventLoopGroup nioEventLoopGroup;
     private final Bootstrap bootstrap;
     private Channel listenChannel = null;
     private Channel connectChannel = null;
+    ////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////
+    // CONSTRUCTOR
     public NettyUdpChannel(BaseEnvironment baseEnvironment, long sessionId, int threadCount, int sendBufSize, int recvBufSize, ChannelInitializer<NioDatagramChannel> channelHandler) {
         super(baseEnvironment, sessionId, threadCount, sendBufSize, recvBufSize);
 
@@ -38,7 +43,10 @@ public class NettyUdpChannel extends NettyChannel {
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
                 .handler(channelHandler);
     }
+    ////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////
+    // FUNCTIONS
     @Override
     public void stop() {
         getRecvBuf().clear();
@@ -108,10 +116,11 @@ public class NettyUdpChannel extends NettyChannel {
 
     @Override
     public void sendData(byte[] data, int dataLength) {
-        if (connectChannel == null) { return; }
+        if (connectChannel == null || connectChannel.isActive()) { return; }
 
         ByteBuf buf = Unpooled.copiedBuffer(data);
         connectChannel.writeAndFlush(buf);
     }
+    ////////////////////////////////////////////////////////////
 
 }

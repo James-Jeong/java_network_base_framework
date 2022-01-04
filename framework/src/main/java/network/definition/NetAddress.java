@@ -1,4 +1,6 @@
-package network.socket;
+package network.definition;
+
+import network.socket.SocketProtocol;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;

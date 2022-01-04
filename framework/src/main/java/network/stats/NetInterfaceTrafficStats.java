@@ -1,4 +1,4 @@
-package network.socket;
+package network.stats;
 
 import util.type.UINT32_T;
 

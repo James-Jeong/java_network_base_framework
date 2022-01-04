@@ -1,6 +1,7 @@
-package network.socket;
+package network.definition;
 
 import instance.BaseEnvironment;
+import network.stats.NetInterfaceTrafficStats;
 
 public class NetInterface {
 

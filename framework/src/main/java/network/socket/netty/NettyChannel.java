@@ -1,4 +1,4 @@
-package network.netty.channel;
+package network.socket.netty;
 
 import instance.BaseEnvironment;
 import io.netty.channel.Channel;
@@ -96,6 +96,8 @@ public class NettyChannel {
     public void closeConnectChannel() {}
 
     public void sendData(byte[] data, int dataLength) {}
+
+    public boolean isRecvOnly() { return false; }
     ////////////////////////////////////////////////////////////
 
 }

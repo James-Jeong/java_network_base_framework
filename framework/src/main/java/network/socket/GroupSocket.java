@@ -6,9 +6,13 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import network.netty.channel.NettyChannel;
-import network.netty.channel.tcp.NettyTcpChannel;
-import network.netty.channel.udp.NettyUdpChannel;
+import network.definition.DestinationRecord;
+import network.definition.GroupEndpointId;
+import network.definition.NetAddress;
+import network.definition.NetInterface;
+import network.socket.netty.NettyChannel;
+import network.socket.netty.tcp.NettyTcpChannel;
+import network.socket.netty.udp.NettyUdpChannel;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;

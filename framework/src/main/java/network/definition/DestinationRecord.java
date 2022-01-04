@@ -1,6 +1,6 @@
-package network.socket;
+package network.definition;
 
-import network.netty.channel.NettyChannel;
+import network.socket.netty.NettyChannel;
 
 public class DestinationRecord {
 
