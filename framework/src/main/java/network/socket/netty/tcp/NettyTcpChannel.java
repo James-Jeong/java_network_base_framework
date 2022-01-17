@@ -114,7 +114,7 @@ public class NettyTcpChannel extends NettyChannel {
 
     @Override
     public void sendData(byte[] data, int dataLength) {
-        if (connectChannel == null || connectChannel.isActive()) { return; }
+        if (connectChannel == null || !connectChannel.isActive()) { return; }
 
         ByteBuf buf = Unpooled.copiedBuffer(data);
         connectChannel.writeAndFlush(buf);
