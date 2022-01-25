@@ -33,20 +33,20 @@ public class Socket {
 
         if (socketProtocol.equals(SocketProtocol.TCP)) {
             if (netInterface.isListenOnly()) {
-                nettyChannel = new NettyTcpClientChannel(
-                        baseEnvironment,
-                        0,
-                        netInterface.getThreadCount(),
-                        netInterface.getRecvBufSize(),
-                        (ChannelInitializer<NioSocketChannel>) channelHandler
-                );
-            } else {
                 nettyChannel = new NettyTcpServerChannel(
                         baseEnvironment,
                         0,
                         netInterface.getThreadCount(),
                         netInterface.getRecvBufSize(),
                         (ChannelInitializer<SocketChannel>) channelHandler
+                );
+            } else {
+                nettyChannel = new NettyTcpClientChannel(
+                        baseEnvironment,
+                        0,
+                        netInterface.getThreadCount(),
+                        netInterface.getRecvBufSize(),
+                        (ChannelInitializer<NioSocketChannel>) channelHandler
                 );
             }
         } else {

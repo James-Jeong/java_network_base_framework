@@ -96,20 +96,20 @@ public class GroupSocket { // SEND-ONLY
         NettyChannel nettyChannel;
         if (netAddress.getSocketProtocol().equals(SocketProtocol.TCP)) {
             if (netInterface.isListenOnly()) {
-                nettyChannel = new NettyTcpClientChannel(
-                        baseEnvironment,
-                        sessionId,
-                        netInterface.getThreadCount(),
-                        netInterface.getRecvBufSize(),
-                        (ChannelInitializer<NioSocketChannel>) channelHandler
-                );
-            } else {
                 nettyChannel = new NettyTcpServerChannel(
                         baseEnvironment,
                         sessionId,
                         netInterface.getThreadCount(),
                         netInterface.getRecvBufSize(),
                         (ChannelInitializer<SocketChannel>) channelHandler
+                );
+            } else {
+                nettyChannel = new NettyTcpClientChannel(
+                        baseEnvironment,
+                        sessionId,
+                        netInterface.getThreadCount(),
+                        netInterface.getRecvBufSize(),
+                        (ChannelInitializer<NioSocketChannel>) channelHandler
                 );
             }
         } else {
