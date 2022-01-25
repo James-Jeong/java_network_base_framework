@@ -4,13 +4,12 @@ import instance.BaseEnvironment;
 import instance.DebugLevel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import network.definition.NetAddress;
 import network.definition.NetInterface;
 import network.socket.netty.NettyChannel;
-import network.socket.netty.tcp.NettyTcpChannel;
+import network.socket.netty.tcp.NettyTcpClientChannel;
 import network.socket.netty.udp.NettyUdpChannel;
 
 public class Socket {
@@ -31,7 +30,7 @@ public class Socket {
         this.socketProtocol = netAddress.getSocketProtocol();
 
         if (socketProtocol.equals(SocketProtocol.TCP)) {
-            nettyChannel = new NettyTcpChannel(
+            nettyChannel = new NettyTcpClientChannel(
                     baseEnvironment,
                     0,
                     netInterface.getThreadCount(),

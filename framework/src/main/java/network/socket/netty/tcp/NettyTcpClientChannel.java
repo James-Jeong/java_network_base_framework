@@ -15,7 +15,7 @@ import network.socket.netty.NettyChannel;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class NettyTcpChannel extends NettyChannel {
+public class NettyTcpClientChannel extends NettyChannel {
 
     ////////////////////////////////////////////////////////////
     // VARIABLES
@@ -27,7 +27,7 @@ public class NettyTcpChannel extends NettyChannel {
 
     ////////////////////////////////////////////////////////////
     // CONSTRUCTOR
-    public NettyTcpChannel(BaseEnvironment baseEnvironment, long sessionId, int threadCount, int recvBufSize, ChannelInitializer<NioSocketChannel> childHandler) {
+    public NettyTcpClientChannel(BaseEnvironment baseEnvironment, long sessionId, int threadCount, int recvBufSize, ChannelInitializer<NioSocketChannel> childHandler) {
         super(baseEnvironment, sessionId, threadCount, 0, recvBufSize);
 
         bootstrap = new Bootstrap();
