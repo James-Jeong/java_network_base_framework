@@ -4,6 +4,7 @@ import instance.BaseEnvironment;
 import instance.DebugLevel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import network.definition.DestinationRecord;
@@ -12,6 +13,7 @@ import network.definition.NetAddress;
 import network.definition.NetInterface;
 import network.socket.netty.NettyChannel;
 import network.socket.netty.tcp.NettyTcpClientChannel;
+import network.socket.netty.tcp.NettyTcpServerChannel;
 import network.socket.netty.udp.NettyUdpChannel;
 
 import java.net.Inet4Address;
@@ -93,13 +95,23 @@ public class GroupSocket { // SEND-ONLY
 
         NettyChannel nettyChannel;
         if (netAddress.getSocketProtocol().equals(SocketProtocol.TCP)) {
-            nettyChannel = new NettyTcpClientChannel(
-                    baseEnvironment,
-                    sessionId,
-                    netInterface.getThreadCount(),
-                    netInterface.getRecvBufSize(),
-                    (ChannelInitializer<NioSocketChannel>) channelHandler
-            );
+            if (netInterface.isListenOnly()) {
+                nettyChannel = new NettyTcpClientChannel(
+                        baseEnvironment,
+                        sessionId,
+                        netInterface.getThreadCount(),
+                        netInterface.getRecvBufSize(),
+                        (ChannelInitializer<NioSocketChannel>) channelHandler
+                );
+            } else {
+                nettyChannel = new NettyTcpServerChannel(
+                        baseEnvironment,
+                        sessionId,
+                        netInterface.getThreadCount(),
+                        netInterface.getRecvBufSize(),
+                        (ChannelInitializer<SocketChannel>) channelHandler
+                );
+            }
         } else {
             nettyChannel = new NettyUdpChannel(
                     baseEnvironment,

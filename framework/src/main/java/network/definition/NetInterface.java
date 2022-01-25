@@ -9,6 +9,7 @@ public class NetInterface {
     // VARIABLES
     private final BaseEnvironment baseEnvironment;
     private final boolean isStream; // tcp or udp
+    private final boolean listenOnly; // tcp 일 때만 적용됨
     private final int threadCount;
     private final int sendBufSize;
     private final int recvBufSize;
@@ -17,9 +18,10 @@ public class NetInterface {
 
     ////////////////////////////////////////////////////////////
     // CONSTRUCTOR
-    public NetInterface(BaseEnvironment baseEnvironment, boolean isStream, int threadCount, int sendBufSize, int recvBufSize) {
+    public NetInterface(BaseEnvironment baseEnvironment, boolean isStream, boolean listenOnly, int threadCount, int sendBufSize, int recvBufSize) {
         this.baseEnvironment = baseEnvironment;
         this.isStream = isStream;
+        this.listenOnly = listenOnly;
         this.threadCount = threadCount;
         this.sendBufSize = sendBufSize;
         this.recvBufSize = recvBufSize;
@@ -73,6 +75,10 @@ public class NetInterface {
 
     public boolean isStream() {
         return isStream;
+    }
+
+    public boolean isListenOnly() {
+        return listenOnly;
     }
 
     @Override

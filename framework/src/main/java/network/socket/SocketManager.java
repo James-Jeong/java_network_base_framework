@@ -21,9 +21,9 @@ public class SocketManager {
 
     ////////////////////////////////////////////////////////////
     // CONSTRUCTOR
-    public SocketManager(BaseEnvironment baseEnvironment, boolean isStream, int threadCount, int sendBufSize, int recvBufSize) {
+    public SocketManager(BaseEnvironment baseEnvironment, boolean isStream, boolean listenOnly, int threadCount, int sendBufSize, int recvBufSize) {
         this.baseEnvironment = baseEnvironment;
-        this.netInterface = new NetInterface(baseEnvironment, isStream, threadCount, sendBufSize, recvBufSize);
+        this.netInterface = new NetInterface(baseEnvironment, isStream, listenOnly, threadCount, sendBufSize, recvBufSize);
     }
     ////////////////////////////////////////////////////////////
 

@@ -37,6 +37,7 @@ public class NetworkTest {
         SocketManager socketManager = new SocketManager(
                 baseEnvironment,
                 false,
+                false,
                 10,
                 500000,
                 500000
@@ -106,6 +107,7 @@ public class NetworkTest {
         // SocketManager 생성
         SocketManager socketManager = new SocketManager(
                 baseEnvironment,
+                false,
                 false,
                 10,
                 0,
