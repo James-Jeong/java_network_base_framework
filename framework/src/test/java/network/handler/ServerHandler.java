@@ -20,8 +20,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
     ////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    protected void channelRead0 (ChannelHandlerContext ctx, DatagramPacket msg) {
-        ByteBuf buf = msg.content();
+    protected void messageReceived(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
+        ByteBuf buf = datagramPacket.content();
         if (buf == null) {
             return;
         }

@@ -19,8 +19,9 @@ public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
     ////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    protected void channelRead0 (ChannelHandlerContext ctx, DatagramPacket msg) {
+    protected void messageReceived(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
         // ignore
+
     }
 
     @Override
