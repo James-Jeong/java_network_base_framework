@@ -72,7 +72,7 @@ public class NettyTcpServerChannel extends NettyChannel {
         try {
             channelFuture = serverBootstrap.bind(address, port).sync();
             this.listenChannel = channelFuture.channel();
-            getBaseEnvironment().printMsg("Channel is opened. (ip=%s, port=%s)", address, port);
+            getBaseEnvironment().printMsg("[NettyTcpServerChannel(%s:%s)] Channel is opened", address, port);
 
             return this.listenChannel;
         } catch (Exception e1) {

@@ -1,5 +1,7 @@
 package network.definition;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import util.type.UINT8_T;
 
 public class GroupEndpointId {
@@ -68,11 +70,8 @@ public class GroupEndpointId {
 
     @Override
     public String toString() {
-        return "GroupEndpointId{" +
-                "groupAddress=" + groupAddress +
-                ", sourceFilterAddress=" + sourceFilterAddress +
-                ", ttl=" + ttl +
-                '}';
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(this);
     }
     ////////////////////////////////////////////////////////////
 
